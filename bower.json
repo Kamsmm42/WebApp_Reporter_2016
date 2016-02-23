@@ -1,0 +1,9 @@
+{
+  "name": "webapp-reporter-2016",
+  "version": "0.0.1",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ]
+}
