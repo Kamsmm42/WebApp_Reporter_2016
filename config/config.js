@@ -8,7 +8,7 @@ var config = {
     app: {
       name: 'webapp-reporter-2016'
     },
-    port: 3000,
+    port: 3002,
     db: 'mongodb://localhost/webapp-reporter-2016-development'
   },
 
