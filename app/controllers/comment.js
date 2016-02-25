@@ -15,6 +15,7 @@ router.post('/', function (req, res, next) {
       res.status(500).send(err);
       return;
     }
+    // demande Simon: comment sauvegarder l'id du Issue
     res.send(createdComment);
   });
 });
