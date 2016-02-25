@@ -62,8 +62,7 @@ router.put('/:id', function(req, res, next) {
     issue.description = req.body.description;
     issue.telephone = req.body.telephone;
     issue.email = req.body.email;
-    issue.coord_long = req.body.coord_long;
-    issue.coord_lat = req.body.coord_lat;
+    issue.coordinates = req.body.coordinates;
     issue.tags = req.body.tags;
     issue.actions = req.body.actions;
 
