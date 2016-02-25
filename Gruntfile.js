@@ -53,12 +53,17 @@ module.exports = function (grunt) {
         ],
         options: { livereload: reloadPort }
       }
+    },
+    jshint: {
+      all: [ "Gruntfile.js", "app/**/*.js", "public/js/**/*.js", "app.js" ]
     }
   });
 
   grunt.config.requires('watch.js.files');
   files = grunt.config('watch.js.files');
   files = grunt.file.expand(files);
+  
+  grunt.loadNpmTasks("grunt-contrib-jshint");
 
   grunt.registerTask('delayed-livereload', 'Live reload after the node server has restarted.', function () {
     var done = this.async();
