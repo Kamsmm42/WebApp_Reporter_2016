@@ -83,7 +83,7 @@ router.delete('/:id', function(req, res, next) {
   Issue.remove({
     _id: issueId
   },
-  function(err) {
+  function(err, data) {
     if (err) {
         res.status(500).send(err);
         return;
