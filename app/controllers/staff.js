@@ -6,6 +6,8 @@ var express = require('express'),
 module.exports = function (app) {
   app.use('/api/staffs', router);
 };
+// Salut
+
 
 // POST /api/staffs
 router.post('/', function (req, res, next) {
