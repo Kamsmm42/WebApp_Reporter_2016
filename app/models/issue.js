@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-var IssuesSchema = new Schema({
+var IssueSchema = new Schema({
   authorname: 	{ type: String, required: true },
   date: 		{ type: Date, required: true },
   description: 	{ type: String, required: true },
@@ -14,11 +14,11 @@ var IssuesSchema = new Schema({
   Coord_long: 	{ type: String, required: true },
   coord_lat: 	{ type: String, required: true }, 
 
-
   // status
+
 
 });
 
 
-mongoose.model('Issues', IssuesSchema);
+mongoose.model('Issue', IssueSchema);
 

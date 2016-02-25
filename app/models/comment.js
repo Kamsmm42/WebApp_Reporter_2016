@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-var CommentsSchema = new Schema({
+var CommentSchema = new Schema({
   authorname: 		{ type: String, required: true },
   text: 			{ type: String, required: true },
   date: 			{ type: Date, required: true },
@@ -15,5 +15,5 @@ var CommentsSchema = new Schema({
 /*a rajouter*/
 
 
-mongoose.model('Comments', CommentsSchema);
+mongoose.model('Comment', CommentSchema);
 

@@ -12,6 +12,10 @@ var StaffSchema = new Schema({
   city: 		{ type: String, required: true }
 });
 
+/*a rajouter*/
+// attention contrainte d'intégrité pour modifier type 
+// attention contrainte d'intégrité pour assigner Issues
+ 
 
 mongoose.model('Staff', StaffSchema);
 

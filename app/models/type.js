@@ -9,8 +9,6 @@ var TypeSchema = new Schema({
 
 });
 
-});
-
 /*a rajouter*/
 // attention contrainte d'intégrité pour modifier type seulement par Staff
  
