@@ -50,7 +50,7 @@ router.get('/:id', function(req, res, next) {
 // PUT /api/staffs/:id
 router.put('/:id', function(req, res, next) {
   var staffId = req.params.id;
-  Parson.findById(staffId, function(err, staff){
+  Staff.findById(staffId, function(err, staff){
     if(err) {
       res.status(500).send(err);
       return;
@@ -59,7 +59,13 @@ router.put('/:id', function(req, res, next) {
       return;
     }
     staff.name = req.body.name;
-    staff.age = req.body.age;
+    staff.login = req.body.login;
+    staff.password = req.body.password;
+    staff.email = req.body.email;
+    staff.telephone = req.body.telephone;
+    staff.city = req.body.city;
+
+
     staff.save(function(err, updatedStaff) {
       if(err) {
         res.status(500).send(err);
