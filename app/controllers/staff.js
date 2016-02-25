@@ -6,8 +6,6 @@ var express = require('express'),
 module.exports = function (app) {
   app.use('/api/staffs', router);
 };
-// Salut
-
 
 // POST /api/staffs
 router.post('/', function (req, res, next) {
@@ -83,12 +81,12 @@ router.delete('/:id', function(req, res, next) {
   Staff.remove({
     _id: staffId
   },
-  function(err) {
+  function(err, data) {
     if (err) {
         res.status(500).send(err);
         return;
     }
-    console.log('Deleted ' + data.n + ' documents.');
+    console.log('Deleted ' + data + ' documents.');
     res.send(204);
   });
 });
