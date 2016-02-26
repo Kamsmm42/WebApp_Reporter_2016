@@ -19,9 +19,9 @@ var IssueSchema = new Schema({
 
   actions: [{
       timestamp: Date,
-      status: { type: String, enum: { enumStatus } }
+      status: { type: String, enum: enumStatus }
     }],
- 
+
   assignedStaff: { type: Schema.Types.ObjectId, ref: 'Staff' }, 
   categorisedType: { type: Schema.Types.ObjectId, ref: 'Type' }
 
