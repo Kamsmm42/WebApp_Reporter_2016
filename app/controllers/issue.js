@@ -21,31 +21,85 @@ router.post('/', function (req, res, next) {
 
 // GET /api/issues
 router.get('/', function(req, res, next) {
+
   
   // création d'un critère de recherche 
-  var criteria = {};
-  //critère recherche par Tags
-  if(typeof(req.query.tags) == "object" && req.query.tags.length) {
-      criteria.tags= {$in:req.query.tags};
-  } else if (req.query.tags){
-      criteria.tags=req.query.tags;
-  }
-  
-  //critère recherche pour authorname
-  if(typeof(req.query.authorname) == "object" && req.query.authorname.length) {
-      criteria.authorname= {$in:req.query.authorname};
-  } else if (req.query.authorname){
-      criteria.authorname=req.query.authorname;
-  }
-  Issue.find(criteria, function(err, issues){
-    if (err) {
-      res.status(500).send(err);
-      return;
-    }
+      var criteria = {};
+      //critère recherche par Tags
+      if(typeof(req.query.tags) == "object" && req.query.tags.length) {
+          criteria.tags= {$in:req.query.tags};
+      } else if (req.query.tags){
+          criteria.tags=req.query.tags;
+      }
+      
+      //critère recherche pour authorname
+      if(typeof(req.query.authorname) == "object" && req.query.authorname.length) {
+          criteria.authorname= {$in:req.query.authorname};
+      } else if (req.query.authorname){
+          criteria.authorname=req.query.authorname;
+      }
 
-    console.log(req.query.authorname);
-    res.send(issues);
-  });
+  // Pagination 
+
+      var page = req.query.page ? parseInt(req.query.page, 5) : 1,
+        pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 5) : 10;
+
+      var offset = (page-1)*pagesize, 
+        limit = pagesize;
+
+      // compte du nombre de Issues
+      Issue.count(function(err,totalCount){
+        if (err){
+            console.log('erreur total count');
+            res.status(500).send(err);
+
+            return;
+        }
+        // compte la quantité selon critère 
+        Issue.count(criteria, function(err, filteredCount){
+          if (err){
+            console.log('erreur filter count');
+            res.status(500).send(err);
+            return;
+          }
+
+          // donne l'info dans le header
+          res.set('X-Pagination-Page', page);
+          res.set('X-Pagination-Page-Size', pagesize);
+          res.set('X-Pagination-Total', totalCount);
+          res.set('X-Pagination-Filtered-Total', filteredCount);
+
+          // envoi de la requete
+            Issue.find(criteria)
+              .sort('authorname')
+              .skip(offset)
+              .limit(limit)
+              .exec(function(err, issues){
+                if (err) {
+                  res.status(500).send(err);
+                  return;
+                }
+
+                console.log(req.query.authorname);
+                res.send(issues);
+              });
+          });
+      });
+  
+  
+
+ 
+      /* original 
+      Issue.find(criteria, function(err, issues){
+        if (err) {
+          res.status(500).send(err);
+          return;
+        }
+
+        console.log(req.query.authorname);
+        res.send(issues);
+      });
+      */
 });
 
 // GET /api/issues/:id

@@ -12,10 +12,12 @@ var IssueSchema = new Schema({
   email: 		     { type: String, required: false },
   telephone: 	  { type: Number, required: false },
   location: 	  { type: { type : String }, coordinates: [Number] },
+  /*
   actions: [{ 
       timestamp: Date,
       status: { type: String, enum: {values: ["created_at", "acknowledged_at", "assigned_at", "in_progress_at", "solved_at", "rejected_at"], message: ""}
     }],
+    */
   assignedStaff: { type: Schema.Types.ObjectId, ref: 'Staff' }, 
   categorisedType: { type: Schema.Types.ObjectId, ref: 'Type' }
 
