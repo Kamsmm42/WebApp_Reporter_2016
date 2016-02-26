@@ -2,10 +2,31 @@ var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
   Comment = mongoose.model('Comment');
+  Staff = mongoose.model('Staff');
+
 
 module.exports = function (app) {
   app.use('/api/comments', router);
 };
+
+// fonction pour vérifier si le user est un Staff 
+// middlewhere identification
+
+// attention ! body 
+function checkStaffExists(req, res, next){
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff){
+    if (err){
+      res.status(500).send(err);
+    return;
+    } else if (!existingStaff){
+        res.status(404).send('You are not authorised to be here');
+      return;
+    }
+    req.staff = existingStaff;
+
+    next();
+  });
+}
 
 /**
  * @api {post} /api/comments Create a new Comment
@@ -24,7 +45,7 @@ module.exports = function (app) {
  * @apiComment CreateCommentError
  */
 // POST /api/comments
-router.post('/', function (req, res, next) {
+router.post('/',checkStaffExists, function (req, res, next) {
   var comment = new Comment(req.body);
   comment.save(function (err, createdComment){
     if (err){
@@ -109,7 +130,7 @@ router.get('/:id', function(req, res, next) {
  */
 
 // PUT /api/comments/:id
-router.put('/:id', function(req, res, next) {
+router.put('/:id',checkStaffExists, function(req, res, next) {
   var commentId = req.params.id;
   Comment.findById(commentId, function(err, comment){
     if(err) {
@@ -150,7 +171,7 @@ router.put('/:id', function(req, res, next) {
  */
 
 // DELETE /api/comments/:id
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id',checkStaffExists, function(req, res, next) {
   var commentId = req.params.id;
 
   Comment.remove({

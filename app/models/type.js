@@ -1,4 +1,4 @@
-// Type model
+s// Type model
 
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;

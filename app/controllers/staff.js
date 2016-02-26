@@ -7,8 +7,28 @@ module.exports = function (app) {
   app.use('/api/staffs', router);
 };
 
-// POST /api/staffs
-router.post('/', function (req, res, next) {
+// fonction pour vérifier si le user est un Staff 
+// middlewhere identification
+
+// attention ! body 
+function checkStaffExists(req, res, next){
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff){
+    if (err){
+      res.status(500).send(err);
+    return;
+    } else if (!existingStaff){
+        res.status(404).send('You are not authorised to be here');
+      return;
+    }
+    req.staff = existingStaff;
+
+    next();
+  });
+}
+
+// POST /api/staffs 
+// création de staff
+router.post('/', checkStaffExists, function (req, res, next) {
   var staff = new Staff(req.body);
   staff.save(function (err, createdStaff){
     if (err){
@@ -43,8 +63,8 @@ router.get('/', function(req, res, next) {
 
   // Pagination de Issues
 
-      var page = req.query.page ? parseInt(req.query.page, 5) : 1,
-        pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 5) : 10;
+      var page = req.query.page ? parseInt(req.query.page, 10) : 1,
+        pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 10) : 30;
 
       var offset = (page-1)*pagesize, 
         limit = pagesize;
@@ -128,7 +148,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 // PUT /api/staffs/:id
-router.put('/:id', function(req, res, next) {
+router.put('/:id',checkStaffExists, function(req, res, next) {
   var staffId = req.params.id;
   Staff.findById(staffId, function(err, staff){
     if(err) {
@@ -157,7 +177,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 // DELETE /api/staffs/:id
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id',checkStaffExists, function(req, res, next) {
   var staffId = req.params.id;
   // Staff.findById(staffId, )
   Staff.remove({

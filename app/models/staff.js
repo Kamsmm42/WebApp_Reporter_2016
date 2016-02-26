@@ -13,7 +13,6 @@ var StaffSchema = new Schema({
 });
 
 /*a rajouter*/
-// attention contrainte d'intégrité pour modifier type 
 // attention contrainte d'intégrité pour assigner Issues
  
 

@@ -2,13 +2,34 @@ var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
   Issue = mongoose.model('Issue');
+  Staff = mongoose.model('Staff');
+
 
 module.exports = function (app) {
   app.use('/api/issues', router);
 };
 
+// fonction pour vérifier si le user est un Staff 
+// middlewhere identification
+
+// attention ! body 
+function checkStaffExists(req, res, next){
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff){
+    if (err){
+      res.status(500).send(err);
+    return;
+    } else if (!existingStaff){
+        res.status(404).send('You are not authorised to be here');
+      return;
+    }
+    req.staff = existingStaff;
+
+    next();
+  });
+}
+
 // POST /api/issues
-router.post('/', function (req, res, next) {
+router.post('/',checkStaffExists, function (req, res, next) {
   var issue = new Issue(req.body);
   issue.save(function (err, createdIssue){
     if (err){
@@ -39,10 +60,10 @@ router.get('/', function(req, res, next) {
           criteria.authorname=req.query.authorname;
       }
 
-  // Pagination 
+  // Pagination de Issues
 
-      var page = req.query.page ? parseInt(req.query.page, 5) : 1,
-        pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 5) : 10;
+      var page = req.query.page ? parseInt(req.query.page, 10) : 1,
+        pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 10) : 30;
 
       var offset = (page-1)*pagesize, 
         limit = pagesize;
@@ -118,7 +139,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 // PUT /api/issues/:id
-router.put('/:id', function(req, res, next) {
+router.put('/:id',checkStaffExists, function(req, res, next) {
   var issueId = req.params.id;
   Issue.findById(issueId, function(err, issue){
     if(err) {
@@ -149,7 +170,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 // DELETE /api/issues/:id
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id',checkStaffExists, function(req, res, next) {
   var issueId = req.params.id;
   // Issue.findById(issueId, )
   Issue.remove({
