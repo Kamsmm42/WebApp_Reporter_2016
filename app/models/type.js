@@ -5,8 +5,7 @@ var mongoose = require('mongoose'),
 
 var TypeSchema = new Schema({
   name: 	         { type: String, required: true },
-  description: 		 { type: String, required: true },
-  categorisedIssues: [{ type: Schema.Types.ObjectId, ref: 'Issue' }]
+  description: 		 { type: String, required: true }
 
 });
 

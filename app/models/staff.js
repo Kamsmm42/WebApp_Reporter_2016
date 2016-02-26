@@ -9,9 +9,7 @@ var StaffSchema = new Schema({
   password: 	{ type: String, required: true },
   email: 		{ type: String, required: true },
   telephone: 	{ type: String, required: true },
-  city: 		{ type: String, required: true },
-  //token: 		{ type: String } // demande à Simon comment utiliser Token Remember me
-  assignedIssues: [{ type: Schema.Types.ObjectId, ref: 'Issues' }]
+  city: 		{ type: String, required: true }
 });
 
 /*a rajouter*/
