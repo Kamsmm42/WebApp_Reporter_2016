@@ -135,6 +135,20 @@ router.put('/:id', function(req, res, next) {
   });
 });
 
+/**
+ * @api {put} /Test/:id Change the comment
+ * @apiVersion 0.1.0
+ * @apiName PutTest
+ * @apiGroup Test
+ * @apiPermission none
+ *
+ * @apiDescription Test"
+ *
+ * @apiParam {String} name Name of the Comment
+ *
+ * @apiComment CreateCommentError
+ */
+
 // DELETE /api/comments/:id
 router.delete('/:id', function(req, res, next) {
   var commentId = req.params.id;

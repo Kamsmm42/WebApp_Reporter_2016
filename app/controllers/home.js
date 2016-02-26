@@ -7,6 +7,12 @@ module.exports = function (app) {
   app.use('/', router);
 };
 
+
+//documentation apidoc 
+router.get('/', function (req, res, next) {
+  res.redirect('/apidoc');
+});
+/*
 router.get('/', function (req, res, next) {
   Article.find(function (err, articles) {
     if (err) return next(err);
@@ -16,3 +22,4 @@ router.get('/', function (req, res, next) {
     });
   });
 });
+*/

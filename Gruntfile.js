@@ -56,7 +56,15 @@ module.exports = function (grunt) {
     },
     jshint: {
       all: [ "Gruntfile.js", "app/**/*.js", "public/js/**/*.js", "app.js" ]
+    }, 
+     apidoc: {
+      all: {
+        src:"app/",
+        dest: "public/apidoc/"
+      }
     }
+
+
   });
 
   grunt.config.requires('watch.js.files');
