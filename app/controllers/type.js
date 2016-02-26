@@ -2,13 +2,33 @@ var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
   Type = mongoose.model('Type');
-
+  Staff = mongoose.model('Staff');
+  
 module.exports = function (app) {
   app.use('/api/types', router);
 };
 
+// fonction pour vérifier si le user est un Staff 
+// middlewhere identification
+
+// attention ! body 
+function checkStaffExists(req, res, next){
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff){
+    if (err){
+      res.status(500).send(err);
+    return;
+    } else if (!existingStaff){
+        res.status(404).send('You are not authorised to be here');
+      return;
+    }
+    req.staff = existingStaff;
+
+    next();
+  });
+}
+
 // POST /api/types
-router.post('/', function (req, res, next) {
+router.post('/',checkStaffExists, function (req, res, next) {
   var type = new Type(req.body);
   type.save(function (err, createdType){
     if (err){
@@ -46,7 +66,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 // PUT /api/types/:id
-router.put('/:id', function(req, res, next) {
+router.put('/:id',checkStaffExists, function(req, res, next) {
   var typeId = req.params.id;
   Type.findById(typeId, function(err, type){
     if(err) {
@@ -70,7 +90,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 // DELETE /api/types/:id
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id',checkStaffExists, function(req, res, next) {
   var typeId = req.params.id;
   // Type.findById(typeId, )
   Type.remove({
