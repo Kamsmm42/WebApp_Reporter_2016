@@ -3,6 +3,10 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
+var enumStatus = {
+  values : ['created_at', 'acknowledged_at', 'assigned_at', 'in_progress_at', 'solved_at', 'rejected_at'],
+  message : 'Status enum validator failed for path `{PATH}` with value `{VALUE}`'
+}
 var IssueSchema = new Schema({
 
   authorname: 	{ type: String, required: true },
@@ -12,9 +16,9 @@ var IssueSchema = new Schema({
   email: 		     { type: String, required: false },
   telephone: 	  { type: Number, required: false },
   location: 	  { type: { type : String }, coordinates: [Number] },
-  actions: [{ 
+  actions: [{
       timestamp: Date,
-      status: { type: String, enum: {values: ["created_at", "acknowledged_at", "assigned_at", "in_progress_at", "solved_at", "rejected_at"], message: ""}
+      status: { type: String, enum: { enumStatus } }
     }],
   assignedStaff: { type: Schema.Types.ObjectId, ref: 'Staff' }, 
   categorisedType: { type: Schema.Types.ObjectId, ref: 'Type' }
