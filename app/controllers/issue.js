@@ -21,11 +21,29 @@ router.post('/', function (req, res, next) {
 
 // GET /api/issues
 router.get('/', function(req, res, next) {
-  Issue.find(function(err, issues){
+  
+  // création d'un critère de recherche 
+  var criteria = {};
+  //critère recherche par Tags
+  if(typeof(req.query.tags) == "object" && req.query.tags.length) {
+      criteria.tags= {$in:req.query.tags};
+  } else if (req.query.tags){
+      criteria.tags=req.query.tags;
+  }
+  
+  //critère recherche pour authorname
+  if(typeof(req.query.authorname) == "object" && req.query.authorname.length) {
+      criteria.authorname= {$in:req.query.authorname};
+  } else if (req.query.authorname){
+      criteria.authorname=req.query.authorname;
+  }
+  Issue.find(criteria, function(err, issues){
     if (err) {
       res.status(500).send(err);
       return;
     }
+
+    console.log(req.query.authorname);
     res.send(issues);
   });
 });

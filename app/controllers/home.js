@@ -12,6 +12,8 @@ module.exports = function (app) {
 router.get('/', function (req, res, next) {
   res.redirect('/apidoc');
 });
+
+
 /*
 router.get('/', function (req, res, next) {
   Article.find(function (err, articles) {
