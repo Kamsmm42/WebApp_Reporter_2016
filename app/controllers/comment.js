@@ -7,6 +7,22 @@ module.exports = function (app) {
   app.use('/api/comments', router);
 };
 
+/**
+ * @api {post} /api/comments Create a new Comment
+ * @apiVersion 0.1.0
+ * @apiName PostComment
+ * @apiGroup Comment
+ * @apiPermission none
+ *
+ * @apiDescription In this case "apiErrorStructure" is defined and used.
+ * Define blocks with params that will be used in several functions, so you dont have to rewrite them.
+ *
+ * @apiParam {String} name Name of the Comment.
+ *
+ * @apiSuccess {Number} id         The new Comment-ID.
+ *
+ * @apiComment CreateCommentError
+ */
 // POST /api/comments
 router.post('/', function (req, res, next) {
   var comment = new Comment(req.body);
@@ -19,6 +35,37 @@ router.post('/', function (req, res, next) {
   });
 });
 
+/**
+ * @api {get} /comment/:id Read data of a Comment
+ * @apiVersion 0.1.0
+ * @apiName GetComment
+ * @apiGroup Comment
+ * @apiPermission admin
+ * *
+ * @apiParam {Number} id The Comment-ID.
+ *
+ * @apiExample Example usage:
+ * curl -i http://localhost:3002/api/Comments
+ *
+ * @apiSuccess {Number}   id            The Comments-ID.
+ * @apiSuccess {Date}     registered    Registration Date.
+ * @apiSuccess {Date}     authorname    Fullname of the User.
+ * @apiSuccess {Object}   profile       Profile data (example for an Object)
+ * @apiSuccess {Number}   profile.age   Users age.
+ * @apiSuccess {String}   profile.image Avatar-Image.
+ * @apiSuccess {Object[]} options       List of Users options (Array of Objects).
+ * @apiSuccess {String}   options.name  Option Name.
+ * @apiSuccess {String}   options.value Option Value.
+ *
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError CommentNotFound   The <code>id</code> of the User was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "error": "NoAccessRight"
+ *     }
+ */
 // GET /api/comments
 router.get('/', function(req, res, next) {
   Comment.find(function(err, comments){
@@ -44,6 +91,21 @@ router.get('/:id', function(req, res, next) {
     res.send(comment);
   });
 });
+
+
+/**
+ * @api {put} /comments/:id Change the comment
+ * @apiVersion 0.1.0
+ * @apiName PutComment
+ * @apiGroup Comment
+ * @apiPermission none
+ *
+ * @apiDescription This function has same errors like POST /user, but errors not defined again, they were included with "apiErrorStructure"
+ *
+ * @apiParam {String} name Name of the Comment
+ *
+ * @apiComment CreateCommentError
+ */
 
 // PUT /api/comments/:id
 router.put('/:id', function(req, res, next) {
