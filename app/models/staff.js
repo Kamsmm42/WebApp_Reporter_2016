@@ -10,11 +10,7 @@ var StaffSchema = new Schema({
   email: 		{ type: String, required: true },
   telephone: 	{ type: String, required: true },
   city: 		{ type: String, required: true }
-});
-
-/*a rajouter*/
-// attention contrainte d'intégrité pour assigner Issues
- 
+}); 
 
 mongoose.model('Staff', StaffSchema);
 

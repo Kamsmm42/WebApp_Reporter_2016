@@ -4,15 +4,13 @@ var express = require('express'),
   Comment = mongoose.model('Comment'),
   Staff = mongoose.model('Staff');
 
-
 module.exports = function (app) {
   app.use('/api/comments', router);
 };
 
-// fonction pour vérifier si le user est un Staff 
-// middlewhere identification
-
-// attention ! body 
+/**
+ * Function to verify that staffIdentity is provided and valid
+ */
 function checkStaffExists(req, res, next){
   Staff.findById(req.body.staffIdentity, function(err, existingStaff){
     if (err){
@@ -29,7 +27,7 @@ function checkStaffExists(req, res, next){
 }
 
 /**
- * Funtion to check email and/or telephone field is complete
+ * Function to check email and/or telephone field is complete
  */
 function validateAtleastEmailOrTelephone(req, res, next){
  var email = req.body.email;
@@ -41,6 +39,32 @@ function validateAtleastEmailOrTelephone(req, res, next){
   return;
  }
   next();
+}
+
+/**
+ * Funtion to insert Staff.name if Comment.authorname not provided and staffIdentity is provided in the request body
+ */
+function insertStaffNameIfAuthornameNotProvided(req, res, next){
+ var authorname = req.body.authorname;
+ var staffID = req.body.staffIdentity;
+ if(staffID && !authorname){
+  // find staff and insert staff's name as authorname
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff){
+    if (err){
+      res.status(500).send(err);
+    return;
+    } else if (!existingStaff){
+        res.status(400).send('Staff ID provided is not valid');
+      return;
+    }
+    req.staff = existingStaff;
+    req.body.authorname = req.staff.name;
+    next();
+  });
+ } else {
+  // authorname provided and/or staffID not provided.. continue..
+  next();
+ }
 }
 
 /**
@@ -60,14 +84,13 @@ function validateAtleastEmailOrTelephone(req, res, next){
  * @apiComment CreateCommentError
  */
 // POST /api/comments
-router.post('/', validateAtleastEmailOrTelephone, function (req, res, next) {
+router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNotProvided, function (req, res, next) {
   var comment = new Comment(req.body);
   comment.save(function (err, createdComment){
     if (err){
       res.status(500).send(err);
       return;
     }
-    // demande Simon: comment sauvegarder l'id du Issue
     res.send(createdComment);
   });
 });
@@ -129,7 +152,6 @@ router.get('/:id', function(req, res, next) {
   });
 });
 
-
 /**
  * @api {put} /comments/:id Change the comment
  * @apiVersion 0.1.0
@@ -184,10 +206,11 @@ router.put('/:id',checkStaffExists, validateAtleastEmailOrTelephone, function(re
  *
  * @apiComment CreateCommentError
  */
-
-// DELETE /api/comments/:id
+ // DELETE /api/comments/:id
 router.delete('/:id',checkStaffExists, function(req, res, next) {
   var commentId = req.params.id;
+
+// TO DO : CI : only staff that is assigned to Comment can delete it.
 
   Comment.remove({
     _id: commentId

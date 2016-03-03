@@ -9,7 +9,7 @@ var enumStatus = {
 }
 var IssueSchema = new Schema({
 
-  authorname: 	{ type: String, required: false },
+  authorname: 	{ type: String, required: true },
   description: 	{ type: String, required: true },
   img_url: 		  { type: String, required: true },
   tags:  		    [{ type: String, required: false }],
@@ -20,10 +20,9 @@ var IssueSchema = new Schema({
       timestamp: Date,
       status: { type: String, enum: enumStatus }
     }],
-  assignedStaff: { type: Schema.Types.ObjectId, ref: 'Staff' }, 
-  categorisedType: { type: Schema.Types.ObjectId, ref: 'Type' }
+  assignedStaffId: { type: Schema.Types.ObjectId, ref: 'Staff' }, 
+  typeId: { type: Schema.Types.ObjectId, ref: 'Type' }
 });
-
 
 mongoose.model('Issue', IssueSchema);
 

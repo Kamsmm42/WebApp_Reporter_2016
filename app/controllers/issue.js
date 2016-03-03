@@ -1,7 +1,6 @@
 var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
-  async = require('async'),
   Issue = mongoose.model('Issue'),
   Staff = mongoose.model('Staff');
 
@@ -10,10 +9,9 @@ module.exports = function (app) {
   app.use('/api/issues', router);
 };
 
-// fonction pour vérifier si le user est un Staff 
-// middlewhere identification
-
-// attention ! body 
+/**
+ * Function to verify that staffIdentity is provided and valid
+ */
 function checkStaffExists(req, res, next){
   Staff.findById(req.body.staffIdentity, function(err, existingStaff){
     if (err){
@@ -30,7 +28,7 @@ function checkStaffExists(req, res, next){
 }
 
 /**
- * Funtion to check email and/or telephone field is complete
+ * Function to check email and/or telephone field is complete
  */
 function validateAtleastEmailOrTelephone(req, res, next){
  var email = req.body.email;
@@ -45,29 +43,14 @@ function validateAtleastEmailOrTelephone(req, res, next){
 }
 
 /**
- * Funtion to insert Staff.name if Issue.authorname not provided and staffIdentity is provided in the request body
+ * Function to insert Staff.name if Issue.authorname not provided and staffIdentity is provided in the request body
  */
 function insertStaffNameIfAuthornameNotProvided(req, res, next){
- 
-
-/**
-* Async attempt to make asyncrhonous
- async.waterfall([
-    function(callback){
-      callback(null, req.body.authorname, req.body.staffIdentity);
-    },
-    function(authorname, staffID, callback){
-      console.log("callback : " + staffID);
-    }
-  ])
-*/
-
-
  var authorname = req.body.authorname;
  var staffID = req.body.staffIdentity;
  if(staffID && !authorname){
   // find staff and insert staff's name as authorname
-  Staff.findById(req.body.staffIdentity, function(err, existingStaff, next){
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff){
     if (err){
       res.status(500).send(err);
     return;
@@ -77,27 +60,16 @@ function insertStaffNameIfAuthornameNotProvided(req, res, next){
     }
     req.staff = existingStaff;
     req.body.authorname = req.staff.name;
-    console.log("before : " + req.body.authorname);
+    next();
   });
-
- } 
-
+ } else {
+  // authorname provided and/or staffID not provided.. continue..
   next();
-  
+ }
 }
-
-/**
- * Test middleware. Used to make sure all middleware is executed sequentially before contents of POST function
- */
-function extraMiddleware(req, res, next){
- console.log("last middleware finished");
-  next();
-}
-
-
 
 // POST /api/issues
-router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNotProvided, extraMiddleware, function (req, res, next) {
+router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNotProvided, function (req, res, next) {
   console.log("After : " + req.body.authorname);
   var issue = new Issue(req.body);
   issue.save(function (err, createdIssue){
@@ -112,54 +84,48 @@ router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNot
 // GET /api/issues
 router.get('/', function(req, res, next) {
 
-  
-  // création d'un critère de recherche 
+  // Create search criteria.. 
       var criteria = {};
-      //critère recherche par Tags
+      // Search criteria by tags..
       if(typeof(req.query.tags) == "object" && req.query.tags.length) {
           criteria.tags= {$in:req.query.tags};
       } else if (req.query.tags){
           criteria.tags=req.query.tags;
       }
-      
-      //critère recherche pour authorname
+      // Search criteria by authorname..
       if(typeof(req.query.authorname) == "object" && req.query.authorname.length) {
           criteria.authorname= {$in:req.query.authorname};
       } else if (req.query.authorname){
           criteria.authorname=req.query.authorname;
       }
 
-  // Pagination de Issues
-
+  // Pagination of Issues..
       var page = req.query.page ? parseInt(req.query.page, 10) : 1,
         pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 10) : 30;
 
       var offset = (page-1)*pagesize, 
         limit = pagesize;
 
-      // compte du nombre de Issues
+      // Count number of Issues..
       Issue.count(function(err,totalCount){
         if (err){
             console.log('erreur total count');
             res.status(500).send(err);
-
             return;
         }
-        // compte la quantité selon critère 
+        // Count number of Issues filtered by search criteria.. 
         Issue.count(criteria, function(err, filteredCount){
           if (err){
             console.log('erreur filter count');
             res.status(500).send(err);
             return;
           }
-
-          // donne l'info dans le header
+          // Set pagination info in header..
           res.set('X-Pagination-Page', page);
           res.set('X-Pagination-Page-Size', pagesize);
           res.set('X-Pagination-Total', totalCount);
           res.set('X-Pagination-Filtered-Total', filteredCount);
-
-          // envoi de la requete
+          // Send query..
             Issue.find(criteria)
               .sort('authorname')
               .skip(offset)
@@ -169,14 +135,10 @@ router.get('/', function(req, res, next) {
                   res.status(500).send(err);
                   return;
                 }
-
-                console.log(req.query.authorname);
                 res.send(issues);
               });
           });
       });
-  
-  
 });
 
 // GET /api/issues/:id

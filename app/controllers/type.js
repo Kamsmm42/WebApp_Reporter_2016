@@ -8,10 +8,9 @@ module.exports = function (app) {
   app.use('/api/types', router);
 };
 
-// fonction pour vérifier si le user est un Staff 
-// middlewhere identification
-
-// attention ! body 
+/**
+ * Function to verify that staffIdentity is provided and valid
+ */
 function checkStaffExists(req, res, next){
   Staff.findById(req.body.staffIdentity, function(err, existingStaff){
     if (err){

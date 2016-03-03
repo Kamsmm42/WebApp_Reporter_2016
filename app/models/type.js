@@ -8,6 +8,5 @@ var TypeSchema = new Schema({
   description: 		 { type: String, required: true }
 });
 
- 
 mongoose.model('Type', TypeSchema);
 
