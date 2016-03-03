@@ -9,7 +9,7 @@ var enumStatus = {
 }
 var IssueSchema = new Schema({
 
-  authorname: 	{ type: String, required: true },
+  authorname: 	{ type: String, required: false },
   description: 	{ type: String, required: true },
   img_url: 		  { type: String, required: true },
   tags:  		    [{ type: String, required: false }],

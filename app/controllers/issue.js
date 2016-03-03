@@ -1,7 +1,8 @@
 var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
-  Issue = mongoose.model('Issue');
+  async = require('async'),
+  Issue = mongoose.model('Issue'),
   Staff = mongoose.model('Staff');
 
 
@@ -43,15 +44,66 @@ function validateAtleastEmailOrTelephone(req, res, next){
   next();
 }
 
+/**
+ * Funtion to insert Staff.name if Issue.authorname not provided and staffIdentity is provided in the request body
+ */
+function insertStaffNameIfAuthornameNotProvided(req, res, next){
+ 
+
+/**
+* Async attempt to make asyncrhonous
+ async.waterfall([
+    function(callback){
+      callback(null, req.body.authorname, req.body.staffIdentity);
+    },
+    function(authorname, staffID, callback){
+      console.log("callback : " + staffID);
+    }
+  ])
+*/
+
+
+ var authorname = req.body.authorname;
+ var staffID = req.body.staffIdentity;
+ if(staffID && !authorname){
+  // find staff and insert staff's name as authorname
+  Staff.findById(req.body.staffIdentity, function(err, existingStaff, next){
+    if (err){
+      res.status(500).send(err);
+    return;
+    } else if (!existingStaff){
+        res.status(400).send('Staff ID provided is not valid');
+      return;
+    }
+    req.staff = existingStaff;
+    req.body.authorname = req.staff.name;
+    console.log("before : " + req.body.authorname);
+  });
+
+ } 
+
+  next();
+  
+}
+
+/**
+ * Test middleware. Used to make sure all middleware is executed sequentially before contents of POST function
+ */
+function extraMiddleware(req, res, next){
+ console.log("last middleware finished");
+  next();
+}
+
+
+
 // POST /api/issues
-router.post('/', validateAtleastEmailOrTelephone, function (req, res, next) {
+router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNotProvided, extraMiddleware, function (req, res, next) {
+  console.log("After : " + req.body.authorname);
   var issue = new Issue(req.body);
   issue.save(function (err, createdIssue){
     if (err){
       res.status(500).send(err);
       return;
-    } else if (req.body.staffIdentity) {
-      console.log(req.body.staffIdentity);
     }
     res.send(createdIssue);
   });

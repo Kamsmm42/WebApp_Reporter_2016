@@ -1,7 +1,7 @@
 var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
-  Type = mongoose.model('Type');
+  Type = mongoose.model('Type'),
   Staff = mongoose.model('Staff');
   
 module.exports = function (app) {
