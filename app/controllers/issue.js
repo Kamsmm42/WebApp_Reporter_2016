@@ -35,7 +35,7 @@ function validateAtleastEmailOrTelephone(req, res, next){
  var email = req.body.email;
  var telephone = req.body.telephone;
  if(email || telephone){
-  console.log( email + " " + telephone);
+  // Valid.. so continue..
  } else {
     res.status(400).send('An email or a telephone number is required');
   return;
@@ -44,12 +44,14 @@ function validateAtleastEmailOrTelephone(req, res, next){
 }
 
 // POST /api/issues
-router.post('/',checkStaffExists, validateAtleastEmailOrTelephone, function (req, res, next) {
+router.post('/', validateAtleastEmailOrTelephone, function (req, res, next) {
   var issue = new Issue(req.body);
   issue.save(function (err, createdIssue){
     if (err){
       res.status(500).send(err);
       return;
+    } else if (req.body.staffIdentity) {
+      console.log(req.body.staffIdentity);
     }
     res.send(createdIssue);
   });
