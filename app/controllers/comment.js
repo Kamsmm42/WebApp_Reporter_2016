@@ -19,13 +19,28 @@ function checkStaffExists(req, res, next){
       res.status(500).send(err);
     return;
     } else if (!existingStaff){
-        res.status(404).send('You are not authorised to be here');
+        res.status(403).send('You are not authorised to be here');
       return;
     }
     req.staff = existingStaff;
 
     next();
   });
+}
+
+/**
+ * Funtion to check email and/or telephone field is complete
+ */
+function validateAtleastEmailOrTelephone(req, res, next){
+ var email = req.body.email;
+ var telephone = req.body.telephone;
+ if(email || telephone){
+  console.log( email + " " + telephone);
+ } else {
+    res.status(400).send('An email or a telephone number is required');
+  return;
+ }
+  next();
 }
 
 /**
@@ -45,7 +60,7 @@ function checkStaffExists(req, res, next){
  * @apiComment CreateCommentError
  */
 // POST /api/comments
-router.post('/',checkStaffExists, function (req, res, next) {
+router.post('/',checkStaffExists, validateAtleastEmailOrTelephone, function (req, res, next) {
   var comment = new Comment(req.body);
   comment.save(function (err, createdComment){
     if (err){
@@ -130,7 +145,7 @@ router.get('/:id', function(req, res, next) {
  */
 
 // PUT /api/comments/:id
-router.put('/:id',checkStaffExists, function(req, res, next) {
+router.put('/:id',checkStaffExists, validateAtleastEmailOrTelephone, function(req, res, next) {
   var commentId = req.params.id;
   Comment.findById(commentId, function(err, comment){
     if(err) {

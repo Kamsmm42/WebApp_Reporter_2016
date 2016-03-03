@@ -28,8 +28,23 @@ function checkStaffExists(req, res, next){
   });
 }
 
+/**
+ * Funtion to check email and/or telephone field is complete
+ */
+function validateAtleastEmailOrTelephone(req, res, next){
+ var email = req.body.email;
+ var telephone = req.body.telephone;
+ if(email || telephone){
+  console.log( email + " " + telephone);
+ } else {
+    res.status(400).send('An email or a telephone number is required');
+  return;
+ }
+  next();
+}
+
 // POST /api/issues
-router.post('/',checkStaffExists, function (req, res, next) {
+router.post('/',checkStaffExists, validateAtleastEmailOrTelephone, function (req, res, next) {
   var issue = new Issue(req.body);
   issue.save(function (err, createdIssue){
     if (err){
@@ -108,19 +123,6 @@ router.get('/', function(req, res, next) {
       });
   
   
-
- 
-      /* original 
-      Issue.find(criteria, function(err, issues){
-        if (err) {
-          res.status(500).send(err);
-          return;
-        }
-
-        console.log(req.query.authorname);
-        res.send(issues);
-      });
-      */
 });
 
 // GET /api/issues/:id
@@ -139,7 +141,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 // PUT /api/issues/:id
-router.put('/:id',checkStaffExists, function(req, res, next) {
+router.put('/:id',checkStaffExists, validateAtleastEmailOrTelephone, function(req, res, next) {
   var issueId = req.params.id;
   Issue.findById(issueId, function(err, issue){
     if(err) {
