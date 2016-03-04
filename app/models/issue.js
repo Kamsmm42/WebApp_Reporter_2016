@@ -21,7 +21,7 @@ var IssueSchema = new Schema({
       status: { type: String, enum: enumStatus }
     }],
   assignedStaffId: { type: Schema.Types.ObjectId, ref: 'Staff' }, 
-  typeId: { type: Schema.Types.ObjectId, ref: 'Type' }
+  typeId: { type: Schema.Types.ObjectId, ref: 'Type', required: true }
 });
 
 mongoose.model('Issue', IssueSchema);
