@@ -9,6 +9,7 @@ module.exports = function (app) {
 };
 
 /**
+/**
  * Function to verify that staffIdentity is provided and valid
  */
 function checkStaffExists(req, res, next){
@@ -25,6 +26,7 @@ function checkStaffExists(req, res, next){
     next();
   });
 }
+/*
 
 /**
  * Function to check email and/or telephone field is complete
