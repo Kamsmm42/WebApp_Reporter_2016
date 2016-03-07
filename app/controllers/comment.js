@@ -9,7 +9,6 @@ module.exports = function (app) {
 };
 
 /**
-/**
  * Function to verify that staffIdentity is provided and valid
  */
 function checkStaffExists(req, res, next){
@@ -26,7 +25,7 @@ function checkStaffExists(req, res, next){
     next();
   });
 }
-/*
+
 
 /**
  * Function to check email and/or telephone field is complete
@@ -69,6 +68,7 @@ function insertStaffNameIfAuthornameNotProvided(req, res, next){
  }
 }
 
+
 /**
  * @api {post} /api/comments Create a new Comment
  * @apiVersion 0.1.0
@@ -76,16 +76,20 @@ function insertStaffNameIfAuthornameNotProvided(req, res, next){
  * @apiGroup Comment
  * @apiPermission none
  *
- * @apiDescription In this case "apiErrorStructure" is defined and used.
- * Define blocks with params that will be used in several functions, so you dont have to rewrite them.
- *
- * @apiParam {String} name Name of the Comment.
+ * @apiDescription Create a new comment only if you're a staff member or you enter a email / telephone.
  *
  * @apiSuccess {Number} id         The new Comment-ID.
+ * @apiSuccess {String}     comment.authorname          comment authorname.
+ * @apiSuccess {String}     comment.text                comment Description.
+ * @apiSuccess {Date}       comment.date                comment image.
+ * @apiSuccess {String}     comment.email               comment email.
+ * @apiSuccess {Number}     comment.telephone           comment telephone.
+ * @apiSuccess {String}     comment.issueId             comment issueId.
  *
  * @apiComment CreateCommentError
  */
-// POST /api/comments
+
+// POST /api/comment
 router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNotProvided, function (req, res, next) {
   var comment = new Comment(req.body);
   comment.save(function (err, createdComment){
@@ -97,30 +101,24 @@ router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNot
   });
 });
 
+
 /**
- * @api {get} /comment/:id Read data of a Comment
+ * @api {get} /comments/:id Read data of a all Comments
  * @apiVersion 0.1.0
- * @apiName GetComment
+ * @apiName GetAllComment
  * @apiGroup Comment
- * @apiPermission admin
- * *
- * @apiParam {Number} id The Comment-ID.
+ * @apiPermission none
  *
- * @apiExample Example usage:
- * curl -i http://localhost:3002/api/Comments
+ * @apiDescription This function read a specific all Comments .
  *
- * @apiSuccess {Number}   id            The Comments-ID.
- * @apiSuccess {Date}     registered    Registration Date.
- * @apiSuccess {Date}     authorname    Fullname of the User.
- * @apiSuccess {Object}   profile       Profile data (example for an Object)
- * @apiSuccess {Number}   profile.age   Users age.
- * @apiSuccess {String}   profile.image Avatar-Image.
- * @apiSuccess {Object[]} options       List of Users options (Array of Objects).
- * @apiSuccess {String}   options.name  Option Name.
- * @apiSuccess {String}   options.value Option Value.
+ * @apiSuccess {String}     comment.authorname          comment authorname.
+ * @apiSuccess {String}     comment.text                comment Description.
+ * @apiSuccess {Img}        comment.date                comment image.
+ * @apiSuccess {String}     comment.email               comment email.
+ * @apiSuccess {Number}     comment.telephone           comment telephone.
+ * @apiSuccess {String}     comment.issueId             comment issueId.
  *
- * @apiError NoAccessRight Only authenticated Admins can access the data.
- * @apiError CommentNotFound   The <code>id</code> of the User was not found.
+ * @apiError CommentNotFound   The <code>id</code> of the Comment was not found.
  *
  * @apiErrorExample Response (example):
  *     HTTP/1.1 401 Not Authenticated
@@ -179,7 +177,41 @@ router.get('/', function(req, res, next) {
           });
       });
 });
-
+/**
+ * @api {get} /comments/:id Read data of a Comment
+ * @apiVersion 0.1.0
+ * @apiName GetComment
+ * @apiGroup Comment
+ * @apiPermission none
+ *
+ * @apiDescription This function read a specific Comment with his id.
+ *
+ * @apiSuccess {String}     comment.authorname          comment authorname.
+ * @apiSuccess {String}     comment.text                comment Description.
+ * @apiSuccess {Img}        comment.date                comment image.
+ * @apiSuccess {String}     comment.email               comment email.
+ * @apiSuccess {Number}     comment.telephone           comment telephone.
+ * @apiSuccess {String}     comment.issueId             comment issueId.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "authorname":        "Kevin",
+ *       "text":              "C'est pas cool",
+ *       "date":              "12.10.2014",
+ *       "email":             "cestdurelavie@hotmail.com",
+ *       "telephone":         "000333222",
+ *       "issueId":           "gdvergdb"
+ *     }
+ *
+ * @apiError CommentNotFound   The <code>id</code> of the Comment was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "comment not found"
+ *     }
+ */
 // GET /api/comments/:id
 router.get('/:id', function(req, res, next) {
   var commentId = req.params.id;
@@ -196,17 +228,32 @@ router.get('/:id', function(req, res, next) {
 });
 
 /**
- * @api {put} /comments/:id Change the comment
+ * @api {put} /comments/:id Change a comment
  * @apiVersion 0.1.0
  * @apiName PutComment
  * @apiGroup Comment
- * @apiPermission none
+ * @apiPermission admin
  *
- * @apiDescription This function has same errors like POST /user, but errors not defined again, they were included with "apiErrorStructure"
+ * @apiDescription This function change a comment 
  *
- * @apiParam {String} name Name of the Comment
+ * @apiParam {Number} id The Comment-ID.
+
+ * @apiSuccess {String}   comment.authorname          comment authorname.
+ * @apiSuccess {String}   comment.text                comment Description.
+ * @apiSuccess {Date}      comment.date                comment image.
+ * @apiSuccess {String}   comment.email               comment email.
+ * @apiSuccess {Number}   comment.telephone           comment telephone.
+ * @apiSuccess {String}   comment.issueId             comment issueId.
  *
- * @apiComment CreateCommentError
+ *
+ * @apiError NoAccessRight Only authenticated Admins can change the data.
+ * @apiError CommentNotFound   The <code>id</code> of the comment was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 NoAccessRight
+ *     {
+ *       "error": "Comment can not change. You haven't the right"
+ *     }
  */
 
 // PUT /api/comments/:id
@@ -236,19 +283,30 @@ router.put('/:id',checkStaffExists, validateAtleastEmailOrTelephone, function(re
   });
 });
 
+
+
 /**
- * @api {put} /Test/:id Change the comment
+ * @api {delete} /comments/:id Delete data of a comment
  * @apiVersion 0.1.0
- * @apiName PutTest
- * @apiGroup Test
- * @apiPermission none
+ * @apiName DeleteComment
+ * @apiGroup Comment
+ * @apiPermission admin  
+ * 
+ * @apiDescription This function for delete a comment 
+ * 
+ * @apiParam {Number} id        The Comment-ID.
  *
- * @apiDescription Test"
+ * @apiError NoAccessRight Only authenticated Admins can delete the data.
+ * @apiError CommentNotFound   The <code>id</code> of the Comment was not found.
  *
- * @apiParam {String} name Name of the Comment
- *
- * @apiComment CreateCommentError
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 NoAccessRight
+ *     {
+ *       "error": "Comment can not delete. You haven't the right"
+ *     }
  */
+
+
  // DELETE /api/comments/:id
 router.delete('/:id',checkStaffExists, function(req, res, next) {
   var commentId = req.params.id;
