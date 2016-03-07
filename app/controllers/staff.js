@@ -25,6 +25,38 @@ function checkStaffExists(req, res, next){
   });
 }
 
+/**
+ * @api {post} /api/staffs Create a new Staff
+ * @apiVersion 0.1.0
+ * @apiName PostStaff
+ * @apiGroup Staff
+ * @apiPermission admin
+ *
+ * @apiDescription Create a new Staff only if you're a staff member.
+ *
+ * @apiSuccess {String}   staff.name          Staff Name.
+ * @apiSuccess {String}   staff.login         Staff login.
+ * @apiSuccess {String}   staff.password      Staff password.
+ * @apiSuccess {String}   staff.email         Staff email.
+ * @apiSuccess {Number}   staff.telephone     Staff telephone.
+ * @apiSuccess {String}   staff.city          Staff city.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name":        "Kevin",
+ *       "login":       "Salut2016",
+ *       "password":    "12345",
+ *       "email":       "cestdurelavie@hotmail.com",
+ *       "telephone":   "000333222",
+ *       "city":        "Lausanne"
+ *     }
+ *
+ * @apiError NoAccessRight Only authenticated Admins can create the data.
+ *
+ * @apiComment CreateStaff
+ */
+
 // POST /api/staffs 
 router.post('/', checkStaffExists, function (req, res, next) {
   var staff = new Staff(req.body);
@@ -36,6 +68,36 @@ router.post('/', checkStaffExists, function (req, res, next) {
     res.send(createdStaff);
   });
 });
+
+
+/**
+ * @api {get} /staffs/:id Read data of all Staff
+ * @apiVersion 0.1.0
+ * @apiName GetAllStaff
+ * @apiGroup Staff
+ * @apiPermission none
+ *
+ * @apiDescription This function read a specific all Staff.
+ *
+ * @apiSuccess {String}   staff.name          Staff Name.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name":        "Kevin", 
+ *       "name":        "Jorde", 
+ *       "name":        "Alice", 
+ *       "name":        "Nico"
+ *     }
+ *
+ * @apiError StaffNotFound   The <code>id</code> of the Type was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Staff not found"
+ *     }
+ */
 
 // GET /api/staffs
 router.get('/', function(req, res, next) {
@@ -101,6 +163,45 @@ router.get('/', function(req, res, next) {
       });
 });
 
+/**
+ * @api {get} /staffs/:id Read data of a Staff
+ * @apiVersion 0.1.0
+ * @apiName GetStaff
+ * @apiGroup Staff
+ * @apiPermission none
+ *
+ * @apiDescription This function read a specific Staff with his id.
+ * 
+ * @apiParam {Number} id        The Staff-ID.
+ *
+ * @apiSuccess {String}   staff.name          Staff Name.
+ * @apiSuccess {String}   staff.login         Staff login.
+ * @apiSuccess {String}   staff.password      Staff password.
+ * @apiSuccess {String}   staff.email         Staff email.
+ * @apiSuccess {Number}   staff.telephone     Staff telephone.
+ * @apiSuccess {String}   staff.city          Staff city.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name":        "Kevin",
+ *       "login":       "Salut2016",
+ *       "password":    "12345",
+ *       "email":       "cestdurelavie@hotmail.com",
+ *       "telephone":   "000333222",
+ *       "city":        "Lausanne"
+ *     }
+ *
+ * @apiError NoAccessRight Only authenticated Admins can change the data.
+ * @apiError StaffNotFound   The <code>id</code> of the Type was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Staff not found"
+ *     }
+ */
+
 // GET /api/staffs/:id
 router.get('/:id', function(req, res, next) {
   var staffId = req.params.id;
@@ -115,6 +216,34 @@ router.get('/:id', function(req, res, next) {
     res.send(staff);
   });
 });
+
+/**
+ * @api {put} /staffs/:id Change a Staff
+ * @apiVersion 0.1.0
+ * @apiName PutStaff
+ * @apiGroup Staff
+ * @apiPermission admin
+ *
+ * @apiDescription This function change a Staff
+ *
+ * @apiParam {Number} id The Staff-ID.
+ *
+ * @apiSuccess {String}   staff.name          Staff Name.
+ * @apiSuccess {String}   staff.login         Staff login.
+ * @apiSuccess {String}   staff.password      Staff password.
+ * @apiSuccess {String}   staff.email         Staff email.
+ * @apiSuccess {Number}   staff.telephone     Staff telephone.
+ * @apiSuccess {String}   staff.city          Staff city.
+ *
+ * @apiError NoAccessRight Only authenticated Admins can change the data.
+ * @apiError StaffNotFound  The <code>id</code> of the Staff was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 NoAccessRight
+ *     {
+ *       "error": "Staff can not change. You haven't the right"
+ *     }
+ */
 
 // PUT /api/staffs/:id
 router.put('/:id',checkStaffExists, function(req, res, next) {
@@ -143,6 +272,29 @@ router.put('/:id',checkStaffExists, function(req, res, next) {
     });
   });
 });
+
+
+
+/**
+ * @api {delete} /staffs/:id Delete data of a Staff
+ * @apiVersion 0.1.0
+ * @apiName DeleteStaff
+ * @apiGroup Staff
+ * @apiPermission admin
+ * 
+ * @apiDescription This function for delete a Staff 
+ * 
+ * @apiParam {Number} id        The Staff-ID.
+ *
+ * @apiError NoAccessRight Only authenticated Admins can delete the data.
+ * @apiError StaffNotFound   The <code>id</code> of the Staff was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 NoAccessRight
+ *     {
+ *       "error": "Staff can not delete. You haven't the right"
+ *     }
+ */
 
 // DELETE /api/staffs/:id
 router.delete('/:id',checkStaffExists, function(req, res, next) {

@@ -68,6 +68,38 @@ function insertStaffNameIfAuthornameNotProvided(req, res, next){
  }
 }
 
+/**
+ * @api {post} /api/issues Create a new Issue
+ * @apiVersion 0.1.0
+ * @apiName PostIssue
+ * @apiGroup Issue
+ * @apiPermission none
+ *
+ * @apiDescription Create a new Issue only if you're a staff member or you enter a email / telephone.
+ *
+ * @apiSuccess {String}   type.authorname          Issue authorname.
+ * @apiSuccess {String}   type.description         Issue Description.
+ * @apiSuccess {Img}      type.img_url             Issue image.
+ * @apiSuccess {String}   type.tags                Issue tags.
+ * @apiSuccess {String}   type.email               Issue email.
+ * @apiSuccess {Number}   type.telephone           Issue telephone.
+ * @apiSuccess {String}   type.location            Issue location.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "authorname": "Jerome",
+ *      "description": "dégradation de mur",
+ *      "image": "mur.png",
+ *      "tags": "graffiti",
+ *      "email": "Jerome@gml.com",
+ *      "telephone": "0404848373",
+ *      "location": "Yverdon"
+ *     }
+ *
+ * @apiComment CreateIssue
+ */
+
 // POST /api/issues
 router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNotProvided, function (req, res, next) {
   console.log("After : " + req.body.authorname);
@@ -80,6 +112,42 @@ router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNot
     res.send(createdIssue);
   });
 });
+
+/**
+ * @api {get} /issues/:id Read data of all Issues
+ * @apiVersion 0.1.0
+ * @apiName GetAllIssues
+ * @apiGroup Issue
+ * @apiPermission none
+ *
+ * @apiDescription This function read a specific all Staff.
+ *
+ * @apiSuccess {String}   type.authorname          Issue authorname.
+ * @apiSuccess {String}   type.description         Issue Description.
+ * @apiSuccess {Img}      type.img_url             Issue image.
+ * @apiSuccess {String}   type.tags                Issue tags.
+ * @apiSuccess {String}   type.email               Issue email.
+ * @apiSuccess {Number}   type.telephone           Issue telephone.
+ * @apiSuccess {String}   type.location            Issue location. *
+ * 
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "authorname": "Jerome",
+ *      "description": "dégradation de mur",
+ *      "image": "mur.png",
+ *      "tags": "graffiti",
+ *      "location": "Yverdon"
+ *     }
+ *
+ * @apiError IssueNotFound   The <code>id</code> of the Issue was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Issue not found"
+ *     }
+ */
 
 // GET /api/issues
 router.get('/', function(req, res, next) {
@@ -141,6 +209,46 @@ router.get('/', function(req, res, next) {
       });
 });
 
+/**
+ * @api {get} /issues/:id Read data of an Issue
+ * @apiVersion 0.1.0
+ * @apiName GetIssue
+ * @apiGroup Issue
+ * @apiPermission none
+ *
+ * @apiDescription This function read a specific Issue with his id.
+ * 
+ * @apiParam {Number} id        The Issue-ID.
+ *
+ * @apiSuccess {String}   type.authorname          Issue authorname.
+ * @apiSuccess {String}   type.description         Issue Description.
+ * @apiSuccess {Img}      type.img_url             Issue image.
+ * @apiSuccess {String}   type.tags                Issue tags.
+ * @apiSuccess {String}   type.email               Issue email.
+ * @apiSuccess {Number}   type.telephone           Issue telephone.
+ * @apiSuccess {String}   type.location            Issue location.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "authorname": "Jerome",
+ *      "description": "dégradation de mur",
+ *      "image": "mur.png",
+ *      "tags": "graffiti",
+ *      "email": "Jerome@gml.com",
+ *      "telephone": "0404848373",
+ *      "location": "Yverdon"
+ *     }
+ *
+ * @apiError IssueNotFound   The <code>id</code> of the Issue was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "Issue not found"
+ *     }
+ */
+
 // GET /api/issues/:id
 router.get('/:id', function(req, res, next) {
   var issueId = req.params.id;
@@ -155,6 +263,36 @@ router.get('/:id', function(req, res, next) {
     res.send(issue);
   });
 });
+
+/**
+ * @api {put} /issues/:id Change a Issue
+ * @apiVersion 0.1.0
+ * @apiName PutIssue
+ * @apiGroup Issue
+ * @apiPermission admin
+ *
+ * @apiDescription This function change a issue 
+ *
+ * @apiParam {Number} id The Issue-ID.
+ *
+ * @apiSuccess {String}   type.authorname          Issue authorname.
+ * @apiSuccess {String}   type.description         Issue Description.
+ * @apiSuccess {Img}      type.img_url             Issue image.
+ * @apiSuccess {String}   type.tags                Issue tags.
+ * @apiSuccess {String}   type.email               Issue email.
+ * @apiSuccess {Number}   type.telephone           Issue telephone.
+ * @apiSuccess {String}   type.location            Issue location.
+ *
+ *
+ * @apiError NoAccessRight Only authenticated Admins can change the data.
+ * @apiError TypeNotFound   The <code>id</code> of the Issue was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 NoAccessRight
+ *     {
+ *       "error": "Issue can not change. You haven't the right"
+ *     }
+ */
 
 // PUT /api/issues/:id
 router.put('/:id',checkStaffExists, validateAtleastEmailOrTelephone, function(req, res, next) {
@@ -186,6 +324,27 @@ router.put('/:id',checkStaffExists, validateAtleastEmailOrTelephone, function(re
     });
   });
 });
+
+/**
+ * @api {delete} /issues/:id Delete data of a Issue
+ * @apiVersion 0.1.0
+ * @apiName DeleteIssue
+ * @apiGroup Issue
+ * @apiPermission admin  
+ * 
+ * @apiDescription This function for delete a Issue 
+ * 
+ * @apiParam {Number} id        The Issue-ID.
+ *
+ * @apiError NoAccessRight Only authenticated Admins can delete the data.
+ * @apiError IssueNotFound   The <code>id</code> of the Issue was not found.
+ *
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 404 NoAccessRight
+ *     {
+ *       "error": "This issue can not delete. You haven't the right"
+ *     }
+ */
 
 // DELETE /api/issues/:id
 router.delete('/:id',checkStaffExists, function(req, res, next) {
