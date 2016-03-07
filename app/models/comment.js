@@ -9,8 +9,7 @@ var CommentSchema = new Schema({
   date: 			{ type: Date, required: true },
   email: 			{ type: String, required: false },
   telephone: 		{ type: Number, required: false },
-  //issueId: { type: Schema.Types.ObjectId, ref: 'Issue', required: true}
-  _issue: { type: Number, ref: 'Issue', required: true}
+  issueId: { type: Schema.Types.ObjectId, ref: 'Issue', required: true}
 });
 
 
