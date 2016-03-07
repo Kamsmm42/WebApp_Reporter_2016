@@ -6,7 +6,6 @@ module.exports = function (app) {
   app.use('/', router);
 };
 
-
 //documentation apidoc 
 router.get('/', function (req, res, next) {
   res.redirect('/apidoc');

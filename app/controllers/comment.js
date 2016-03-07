@@ -130,13 +130,54 @@ router.post('/', validateAtleastEmailOrTelephone, insertStaffNameIfAuthornameNot
  */
 // GET /api/comments
 router.get('/', function(req, res, next) {
-  Comment.find(function(err, comments){
-    if (err) {
-      res.status(500).send(err);
-      return;
-    }
-    res.send(comments);
-  });
+
+  // Create search criteria.. 
+      var criteria = {};
+      // Search criteria by authorname..
+      if(typeof(req.query.authorname) == "object" && req.query.authorname.length) {
+          criteria.authorname= {$in:req.query.authorname};
+      } else if (req.query.authorname){
+          criteria.authorname=req.query.authorname;
+      }
+
+      // Pagination of Comments..
+      var page = req.query.page ? parseInt(req.query.page, 10) : 1,
+        pagesize = req.query.pagesize ? parseInt(req.query.pagesize, 10) : 30;
+
+      var offset = (page-1)*pagesize, 
+        limit = pagesize;
+
+      // Count number of Comments..
+      Comment.count(function(err,totalCount){
+        if (err){
+            res.status(500).send(err);
+            return;
+        }
+        // Count number of Comments filtered by search criteria.. 
+        Comment.count(criteria, function(err, filteredCount){
+          if (err){
+            res.status(500).send(err);
+            return;
+          }
+          // Set pagination info in header..
+          res.set('X-Pagination-Page', page);
+          res.set('X-Pagination-Page-Size', pagesize);
+          res.set('X-Pagination-Total', totalCount);
+          res.set('X-Pagination-Filtered-Total', filteredCount);
+          // Send query..
+            Comment.find(criteria)
+              .sort('authorname')
+              .skip(offset)
+              .limit(limit)
+              .exec(function(err, comments){
+                if (err) {
+                  res.status(500).send(err);
+                  return;
+                }
+                res.send(comments);
+              });
+          });
+      });
 });
 
 // GET /api/comments/:id
@@ -213,7 +254,7 @@ router.delete('/:id',checkStaffExists, function(req, res, next) {
   var commentId = req.params.id;
 
 // TO DO : CI : only staff that is assigned to Comment can delete it.
-
+// Question : How to send "staffIdentity" in body, with DELETE http verb?
   Comment.remove({
     _id: commentId
   },
